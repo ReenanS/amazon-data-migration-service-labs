@@ -1,0 +1,57 @@
+{
+    "rules": [
+        {
+            "rule-type": "selection",
+            "rule-id": "521256124",
+            "rule-name": "521256124",
+            "object-locator": {
+                "schema-name": "dbo",
+                "table-name": "Estudantes"
+            },
+            "rule-action": "include",
+            "filters": [],
+            "parallel-load": null,
+            "isAutoSegmentationChecked": false
+        },
+        {
+            "rule-type": "selection",
+            "rule-id": "521244218",
+            "rule-name": "521244218",
+            "object-locator": {
+                "schema-name": "dbo",
+                "table-name": "Professores"
+            },
+            "rule-action": "include",
+            "filters": [],
+            "parallel-load": null,
+            "isAutoSegmentationChecked": false
+        },
+        {
+            "rule-type": "selection",
+            "rule-id": "521210961",
+            "rule-name": "521210961",
+            "object-locator": {
+                "schema-name": "dbo",
+                "table-name": "Cursos"
+            },
+            "rule-action": "include",
+            "filters": [],
+            "parallel-load": null,
+            "isAutoSegmentationChecked": false
+        },
+        {
+            "rule-type": "selection",
+            "rule-id": "521210962",
+            "rule-name": "521210962",
+            "object-locator": {
+                "schema-name": "dbo",
+                "table-name": "UniversidadeView",
+                "table-type": "view"
+            },
+            "rule-action": "include",
+            "filters": [],
+            "parallel-load": null,
+            "isAutoSegmentationChecked": false
+        }
+    ]
+}
