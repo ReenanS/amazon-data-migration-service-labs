@@ -8,12 +8,12 @@
         {
           "Variable": "$.tipoOperacao",
           "StringEquals": "criar",
-          "Next": "ChamaLambdaExternaParaCriar"
+          "Next": "ChamaLambdaExterna"
         },
         {
           "Variable": "$.tipoOperacao",
           "StringEquals": "atualizar",
-          "Next": "ChamaLambdaExternaParaAtualizar"
+          "Next": "ChamaLambdaExterna"
         },
         {
           "Variable": "$.tipoOperacao",
@@ -23,7 +23,7 @@
       ],
       "Default": "OperacaoInvalida"
     },
-    "ChamaLambdaExternaParaCriar": {
+    "ChamaLambdaExterna": {
       "Type": "Task",
       "Resource": "arn:aws:lambda:REGION:ACCOUNT_ID:function:ConsomeApiExternaLambda",
       "Retry": [
@@ -40,26 +40,22 @@
           "Next": "FalhaNaExecucao"
         }
       ],
-      "Next": "CriarBancoDeDados"
+      "Next": "VerificaCriarOuAtualizar"
     },
-    "ChamaLambdaExternaParaAtualizar": {
-      "Type": "Task",
-      "Resource": "arn:aws:lambda:REGION:ACCOUNT_ID:function:ConsomeApiExternaLambda",
-      "Retry": [
+    "VerificaCriarOuAtualizar": {
+      "Type": "Choice",
+      "Choices": [
         {
-          "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException"],
-          "IntervalSeconds": 2,
-          "MaxAttempts": 3,
-          "BackoffRate": 2
-        }
-      ],
-      "Catch": [
+          "Variable": "$.tipoOperacao",
+          "StringEquals": "criar",
+          "Next": "CriarBancoDeDados"
+        },
         {
-          "ErrorEquals": ["States.ALL"],
-          "Next": "FalhaNaExecucao"
+          "Variable": "$.tipoOperacao",
+          "StringEquals": "atualizar",
+          "Next": "AtualizarBancoDeDados"
         }
-      ],
-      "Next": "AtualizarBancoDeDados"
+      ]
     },
     "CriarBancoDeDados": {
       "Type": "Task",
