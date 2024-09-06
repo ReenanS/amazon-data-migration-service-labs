@@ -1,0 +1,132 @@
+{
+  "Comment": "Step Function para verificar operação, consumir API externa e executar operações no banco de dados",
+  "StartAt": "VerificaTipoOperacao",
+  "States": {
+    "VerificaTipoOperacao": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.tipoOperacao",
+          "StringEquals": "criar",
+          "Next": "ChamaLambdaExternaParaCriar"
+        },
+        {
+          "Variable": "$.tipoOperacao",
+          "StringEquals": "atualizar",
+          "Next": "ChamaLambdaExternaParaAtualizar"
+        },
+        {
+          "Variable": "$.tipoOperacao",
+          "StringEquals": "deletar",
+          "Next": "DeletarBancoDeDados"
+        }
+      ],
+      "Default": "OperacaoInvalida"
+    },
+    "ChamaLambdaExternaParaCriar": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:REGION:ACCOUNT_ID:function:ConsomeApiExternaLambda",
+      "Retry": [
+        {
+          "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException"],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 3,
+          "BackoffRate": 2
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "FalhaNaExecucao"
+        }
+      ],
+      "Next": "CriarBancoDeDados"
+    },
+    "ChamaLambdaExternaParaAtualizar": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:REGION:ACCOUNT_ID:function:ConsomeApiExternaLambda",
+      "Retry": [
+        {
+          "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException"],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 3,
+          "BackoffRate": 2
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "FalhaNaExecucao"
+        }
+      ],
+      "Next": "AtualizarBancoDeDados"
+    },
+    "CriarBancoDeDados": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:REGION:ACCOUNT_ID:function:CriarBancoDeDadosLambda",
+      "Retry": [
+        {
+          "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException"],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 3,
+          "BackoffRate": 2
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "FalhaNaExecucao"
+        }
+      ],
+      "End": true
+    },
+    "AtualizarBancoDeDados": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:REGION:ACCOUNT_ID:function:AtualizarBancoDeDadosLambda",
+      "Retry": [
+        {
+          "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException"],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 3,
+          "BackoffRate": 2
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "FalhaNaExecucao"
+        }
+      ],
+      "End": true
+    },
+    "DeletarBancoDeDados": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:REGION:ACCOUNT_ID:function:DeletarBancoDeDadosLambda",
+      "Retry": [
+        {
+          "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException"],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 3,
+          "BackoffRate": 2
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "FalhaNaExecucao"
+        }
+      ],
+      "End": true
+    },
+    "FalhaNaExecucao": {
+      "Type": "Fail",
+      "Error": "ExecucaoFalhou",
+      "Cause": "Erro durante a execução da Step Function"
+    },
+    "OperacaoInvalida": {
+      "Type": "Fail",
+      "Error": "OperacaoInvalida",
+      "Cause": "O tipo de operação fornecido é inválido"
+    }
+  }
+}
